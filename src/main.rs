@@ -1,4 +1,9 @@
 //! TCS34725 sensor printing to the console
+//! 
+//! https://docs.rs/tcs3472/0.1.1/tcs3472/ - crate description
+//! 
+//! https://ams.com/documents/20143/36005/TCS3472_DS000390_2-00.pdf - sensor datasheet
+//! 
 
 
 #![no_std]
@@ -14,9 +19,13 @@ extern crate stm32f0xx_hal as hal;
 use cortex_m_semihosting::hprintln;
 
 use cortex_m_rt::entry;
-use ssd1306::{prelude::*, Builder as SSD1306Builder};
+//use ssd1306::{prelude::*, Builder as SSD1306Builder};
 
-use tcs3472::Tcs3472;
+use tcs3472::{
+    Tcs3472,
+    RgbCGain,
+    RgbCInterruptPersistence,
+    };
 
 use crate::hal::{
     prelude::*,
@@ -50,7 +59,22 @@ fn main() -> ! {
         let mut tcs = Tcs3472::new(i2c);
 
         tcs.enable().unwrap();
+
+        //Enable and read the color measurement
+
         tcs.enable_rgbc().unwrap();
+
+        //Change the RGB converter gain and integration cycles
+
+        tcs.set_rgbc_gain(RgbCGain::_16x).unwrap();
+        tcs.set_integration_cycles(32).unwrap();
+
+        //Enable and configure RGB converter interrupt generation
+
+        tcs.set_rgbc_interrupt_low_threshold(1024).unwrap();
+        tcs.set_rgbc_interrupt_high_threshold(61440).unwrap();
+        tcs.set_rgbc_interrupt_persistence(RgbCInterruptPersistence::_5).unwrap();
+        tcs.enable_rgbc_interrupts().unwrap();
 
         while !tcs.is_rgbc_status_valid().unwrap() {};
 

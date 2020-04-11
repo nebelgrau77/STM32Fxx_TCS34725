@@ -2,6 +2,10 @@
 
 Currently just prints raw readings to the console with semihosting.
 
+https://docs.rs/tcs3472/0.1.1/tcs3472/ - crate description
+
+https://ams.com/documents/20143/36005/TCS3472_DS000390_2-00.pdf - sensor datasheet
+
 TO DO:
 
 * conversion to useful RGB values
